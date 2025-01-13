@@ -1,0 +1,1 @@
+export { deleteEventScene } from "./deleteEvent";

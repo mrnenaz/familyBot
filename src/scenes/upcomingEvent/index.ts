@@ -1,0 +1,1 @@
+export { getUpcomingEvent } from "./upcomingEvent";
