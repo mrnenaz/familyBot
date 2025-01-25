@@ -4,6 +4,10 @@ import { formatDate, getDateDDMMYYYY } from "../../utils";
 
 export const stepOne = Telegraf.on("text", async (ctx: any) => {
   ctx.scene.state.event.name = ctx.message.text;
+  console.log("ctx.message.text", ctx.message);
+  console.log("ctx.update", ctx.update);
+  console.log(ctx.scene.state.event.del1);
+  // await ctx.deleteMessage(ctx.scene.state.event.del1);
   ctx.reply(
     `Введите дату события <b>${ctx.scene.state.event.name}</b> в формате дд.мм.гггг`,
     {
@@ -19,6 +23,7 @@ export const stepOne = Telegraf.on("text", async (ctx: any) => {
 });
 
 export const stepTwo = Telegraf.on("text", async (ctx: any) => {
+  ctx.scene.state.messageForDeleted.push(ctx.update.message.message_id);
   if (dateMask.test(ctx.message.text.replace(/\,/g, "."))) {
     const date = new Date(formatDate(ctx.message.text.replace(/\,/g, ".")));
     ctx.scene.state.event.date = date.toISOString();

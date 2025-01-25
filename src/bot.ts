@@ -1,23 +1,6 @@
 import { Telegraf, Markup, Scenes, Context, session } from "telegraf";
-// import { COMMANDS, COMMAND_NAMES } from "./constants";
-// import { whatWeatherNotIScene } from "./scenes/create";
-// import {
-//   start,
-//   startCreateGiveAway,
-//   startGetGiveawaysInfo,
-//   startGetInfo,
-//   startWhatWeather,
-// } from "./commands/commands";
-// import {
-//   handleCallbackBtnClick,
-//   handleGiveAwayCallbackBtnClick,
-// } from "./commands/actions";
-// import { callbackScene } from "./scenes/callback";
-// import { createGiveaway } from "./scenes/giveaway";
-// import { giveAwayCallbackScene } from "./scenes/giveawayCallback";
-// import { getGiveawaysInfo } from "./scenes/getGiveawaysInfo";
 import schedule from "node-schedule";
-import { COMMAND_NAMES, COMMANDS } from "./constants";
+import { COMMAND_NAMES, COMMANDS, GROUP_TYPES, ROLES } from "./constants";
 import { startNewEvent, upcomingEvent } from "./commands";
 import {
   allEventsScene,
@@ -46,7 +29,7 @@ export const setupBot = async () => {
     editEventScene,
     deleteEventScene,
   ]);
-  bot.telegram.setMyCommands(COMMANDS);
+  bot.telegram.setMyCommands([COMMANDS[0]]);
 
   bot.use(session());
   bot.use(stage.middleware());
@@ -80,6 +63,30 @@ export const setupBot = async () => {
 
   bot.command(COMMAND_NAMES.DELETE_EVENT, async (ctx: any) => {
     return deleteEvent(ctx);
+  });
+
+  bot.command(COMMAND_NAMES.START, async (ctx: any) => {
+    const chatType = await ctx.chat.type;
+    if (chatType === GROUP_TYPES.PRIVATE) {
+      await ctx.reply("Команды добавлены! Обновление займет около минуты.");
+      return bot.telegram.setMyCommands(COMMANDS.slice(1));
+    } else {
+      return ctx.reply("Команды доступны только в личных сообщениях боту.");
+    }
+  });
+
+  bot.on("message", async (ctx: any) => {
+    console.log("chat", ctx.chat.type);
+    const hasNowEvent = /что на сегодня/g.test(ctx.message.text);
+    const hasUpcomnigEvent =
+      /ближайшее событие/g.test(ctx.message.text) ||
+      /ближайшие события/g.test(ctx.message.text);
+    if (hasNowEvent) {
+      return nowEvent(ctx);
+    }
+    if (hasUpcomnigEvent) {
+      return upcomingEvent(ctx);
+    }
   });
 
   // bot.action(/send (.+)/, async (ctx) => {
