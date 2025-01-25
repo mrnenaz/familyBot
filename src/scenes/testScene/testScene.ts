@@ -1,4 +1,4 @@
-import { Markup, Scenes } from "telegraf";
+import { Context, Markup, Scenes } from "telegraf";
 import { BTN_TEXTS, EVENT_NAMES, SCENE_NAMES } from "../../constants";
 import { stepOne, stepTwo } from "./steps";
 import { insertNewEvent } from "../../db";
@@ -9,8 +9,7 @@ export const testScene = new Scenes.WizardScene(
   stepTwo
 );
 
-testScene.enter(async (ctx) => {
-  // await ctx.sendMessage("testScene");
+testScene.enter(async (ctx: any) => {
   ctx.reply("Добавить новое событие?", {
     reply_markup: {
       inline_keyboard: [
@@ -24,8 +23,12 @@ testScene.enter(async (ctx) => {
 });
 
 testScene.action(EVENT_NAMES.newEvent, async (ctx: any) => {
-  ctx.scene.state.event = {};
-  ctx.reply("<b>Введите название события</b>", {
+  // await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
+  ctx.scene.state = {
+    event: {},
+    messageForDeleted: [],
+  };
+  await ctx.reply("<b>Введите название события</b>", {
     parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [
@@ -33,9 +36,16 @@ testScene.action(EVENT_NAMES.newEvent, async (ctx: any) => {
       ],
     },
   });
+  console.log("ctx 1", ctx.message);
+  console.log("ctx 2", ctx.update);
+  ctx.scene.state.event.del1 = ctx.update.callback_query.message.message_id;
+  // return ctx.wizard.next();
 });
 
 testScene.action(EVENT_NAMES.save, async (ctx: any) => {
+  ctx.scene.state.messageForDeleted.push(
+    ctx.update.callback_query.message.message_id
+  );
   const eventData: any = ctx.scene.state.event;
   const result = await insertNewEvent(eventData);
   if (result) {
@@ -51,7 +61,10 @@ testScene.action(EVENT_NAMES.cancel, async (ctx: any) => {
   return ctx.scene.leave();
 });
 
-testScene.leave((ctx) => {
-  ctx.reply("До свидания!");
+testScene.leave(async (ctx: any) => {
+  // ctx.reply("До свидания!");
+  // ctx.scene.state.messageForDeleted.map(async (item: string) => {
+  //   await ctx.deleteMessage(item);
+  // });
   return ctx.scene.leave();
 });

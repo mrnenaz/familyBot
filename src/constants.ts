@@ -5,9 +5,14 @@ export const COMMAND_NAMES = {
   DELETE_EVENT: "delete_event",
   ALL_EVENTS: "all_events",
   TODAY: "today",
+  START: "start",
 };
 
 export const COMMANDS = [
+  {
+    command: COMMAND_NAMES.START,
+    description: "start",
+  },
   {
     command: COMMAND_NAMES.UPCOMING_EVENT,
     description: "Ближайшее событие",
@@ -61,3 +66,16 @@ export const EVENT_NAMES = {
 };
 
 export const dateMask = /^\d{2}\.\d{2}\.\d{4}$/;
+
+export enum ROLES {
+  ADMIN = "administrator",
+  MEMBER = "member",
+  CREATOR = "creator",
+}
+
+export enum GROUP_TYPES {
+  PRIVATE = "private",
+  GROUP = "group",
+  SUPERGROUP = "supergroup",
+  CHANNEL = "channel",
+}
