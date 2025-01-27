@@ -3,29 +3,29 @@ version: "3.0"
 services:
   mongo:
     image: mongo:latest
-    container_name: mongo
+    container_name: mongo_fam2
     ports:
-      - 27017:27017
+      - 27017
     volumes:
       - mongo-data:/data/db
     networks:
-      - mynetwork
+      - mynetwork2
 
   app:
     build: .
-    container_name: node-app
+    container_name: node-app_fam
     ports:
-      - 3000:3000
+      - 3001:3001
 
     depends_on:
       - mongo
     environment:
       - MONGO_URL=mongodb://mongo:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2
     networks:
-      - mynetwork
+      - mynetwork2
 
 networks:
-  mynetwork:
+  mynetwork2:
 
 volumes:
   mongo-data:
