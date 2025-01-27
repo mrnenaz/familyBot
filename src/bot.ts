@@ -1,7 +1,7 @@
-import { Telegraf, Markup, Scenes, Context, session } from "telegraf";
-import schedule from "node-schedule";
-import { COMMAND_NAMES, COMMANDS, GROUP_TYPES, ROLES } from "./constants";
-import { startNewEvent, upcomingEvent } from "./commands";
+import { Telegraf, Scenes, session } from "telegraf";
+// import schedule from "node-schedule";
+import { COMMAND_NAMES, COMMANDS } from "./constants";
+import { upcomingEvent } from "./commands";
 import {
   allEventsScene,
   deleteEventScene,
@@ -10,14 +10,9 @@ import {
   todayScene,
 } from "./scenes";
 import { testScene } from "./scenes/testScene/testScene";
-import {
-  allEvents,
-  deleteEvent,
-  editEvent,
-  nowEvent,
-  testCommand,
-} from "./commands/commands";
-import { findCurrentEvents } from "./db/controllers/Events";
+import { nowEvent, welcomeEvent } from "./commands/commands";
+import { welcomeEventScene } from "./scenes/welcomeEvent";
+// import { findCurrentEvents } from "./db/controllers/Events";
 
 export const setupBot = async () => {
   const bot = new Telegraf(process.env.GribFamilyButlerBot);
@@ -28,6 +23,7 @@ export const setupBot = async () => {
     todayScene,
     editEventScene,
     deleteEventScene,
+    welcomeEventScene,
   ]);
   bot.telegram.setMyCommands([COMMANDS[0]]);
 
@@ -38,41 +34,8 @@ export const setupBot = async () => {
     return next();
   });
 
-  bot.command(COMMAND_NAMES.NEW_EVENT, async (ctx: any) => {
-    // const chatId = ctx.chat.id;
-    // console.log(`ID группы: ${chatId}`);
-    // return startNewEvent(ctx);
-    return testCommand(ctx);
-  });
-
-  bot.command(COMMAND_NAMES.UPCOMING_EVENT, async (ctx: any) => {
-    return upcomingEvent(ctx);
-  });
-
-  bot.command(COMMAND_NAMES.TODAY, async (ctx: any) => {
-    return nowEvent(ctx);
-  });
-
-  bot.command(COMMAND_NAMES.ALL_EVENTS, async (ctx: any) => {
-    return allEvents(ctx);
-  });
-
-  bot.command(COMMAND_NAMES.EDIT_EVENT, async (ctx: any) => {
-    return editEvent(ctx);
-  });
-
-  bot.command(COMMAND_NAMES.DELETE_EVENT, async (ctx: any) => {
-    return deleteEvent(ctx);
-  });
-
-  bot.command(COMMAND_NAMES.START, async (ctx: any) => {
-    const chatType = await ctx.chat.type;
-    if (chatType === GROUP_TYPES.PRIVATE) {
-      await ctx.reply("Команды добавлены! Обновление займет около минуты.");
-      return bot.telegram.setMyCommands(COMMANDS.slice(1));
-    } else {
-      return ctx.reply("Команды доступны только в личных сообщениях боту.");
-    }
+  bot.command(COMMAND_NAMES.WELCOME, async (ctx: any) => {
+    return welcomeEvent(ctx);
   });
 
   bot.on("message", async (ctx: any) => {
@@ -88,26 +51,6 @@ export const setupBot = async () => {
       return upcomingEvent(ctx);
     }
   });
-
-  // bot.action(/send (.+)/, async (ctx) => {
-  //   await handleCallbackBtnClick(ctx);
-  // });
-
-  // bot.action(/participation (.+)/, async (ctx) => {
-  //   return handleGiveAwayCallbackBtnClick(ctx);
-  // });
-
-  // bot.command(COMMAND_NAMES.GET_INFO, async (ctx) => {
-  //   return startGetInfo(ctx);
-  // });
-
-  // bot.command(COMMAND_NAMES.CREATE_GIVEAWAY, async (ctx: any) => {
-  //   return startCreateGiveAway(ctx);
-  // });
-
-  // bot.command(COMMAND_NAMES.GET_GIVEAWAYS_INFO, async (ctx: any) => {
-  //   return startGetGiveawaysInfo(ctx);
-  // });
 
   /**
    *

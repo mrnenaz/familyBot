@@ -28,3 +28,7 @@ export const editEvent = (ctx: any) => {
 export const deleteEvent = (ctx: any) => {
   return ctx.scene.enter(SCENE_NAMES.DELETE);
 };
+
+export const welcomeEvent = (ctx: any) => {
+  return ctx.scene.enter(SCENE_NAMES.WELCOME);
+};
