@@ -60,6 +60,10 @@ export const findUpcomingEvents = async () => {
       ],
     },
   });
+  console.log("resultsArray", resultsArray);
+  if (resultsArray.length === 0) {
+    return [];
+  }
   resultsArray.sort((a, b) => {
     if (a.date.getMonth() < b.date.getMonth()) return -1;
     if (a.date.getMonth() > b.date.getMonth()) return 1;
@@ -69,7 +73,7 @@ export const findUpcomingEvents = async () => {
       return 0;
     }
   });
-  console.log("resultsArray", resultsArray);
+
   const findDate = resultsArray[0].date;
   return resultsArray.reduce((acc, item) => {
     if (item.date.getTime() === findDate.getTime()) {

@@ -14,7 +14,7 @@ testScene.enter(async (ctx: any) => {
     reply_markup: {
       inline_keyboard: [
         [
-          Markup.button.callback(BTN_TEXTS.yes, EVENT_NAMES.newEvent),
+          Markup.button.callback(BTN_TEXTS.yes, EVENT_NAMES.create),
           Markup.button.callback(BTN_TEXTS.no, EVENT_NAMES.cancel),
         ],
       ],
@@ -22,8 +22,7 @@ testScene.enter(async (ctx: any) => {
   });
 });
 
-testScene.action(EVENT_NAMES.newEvent, async (ctx: any) => {
-  // await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
+testScene.action(EVENT_NAMES.create, async (ctx: any) => {
   ctx.scene.state = {
     event: {},
     messageForDeleted: [],
@@ -39,7 +38,6 @@ testScene.action(EVENT_NAMES.newEvent, async (ctx: any) => {
   console.log("ctx 1", ctx.message);
   console.log("ctx 2", ctx.update);
   ctx.scene.state.event.del1 = ctx.update.callback_query.message.message_id;
-  // return ctx.wizard.next();
 });
 
 testScene.action(EVENT_NAMES.save, async (ctx: any) => {
@@ -62,9 +60,5 @@ testScene.action(EVENT_NAMES.cancel, async (ctx: any) => {
 });
 
 testScene.leave(async (ctx: any) => {
-  // ctx.reply("До свидания!");
-  // ctx.scene.state.messageForDeleted.map(async (item: string) => {
-  //   await ctx.deleteMessage(item);
-  // });
   return ctx.scene.leave();
 });

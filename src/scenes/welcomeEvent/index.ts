@@ -1,0 +1,1 @@
+export { welcomeEventScene } from "./welcomeEvent";

@@ -6,12 +6,13 @@ export const COMMAND_NAMES = {
   ALL_EVENTS: "all_events",
   TODAY: "today",
   START: "start",
+  WELCOME: "welcome",
 };
 
 export const COMMANDS = [
   {
-    command: COMMAND_NAMES.START,
-    description: "start",
+    command: COMMAND_NAMES.WELCOME,
+    description: "Добро пожаловать",
   },
   {
     command: COMMAND_NAMES.UPCOMING_EVENT,
@@ -47,6 +48,7 @@ export const SCENE_NAMES = {
   ALL: "all",
   EDIT: "edit",
   DELETE: "delete",
+  WELCOME: "welcome",
 };
 
 export const BTN_TEXTS = {
@@ -59,10 +61,15 @@ export const BTN_TEXTS = {
 
 export const EVENT_NAMES = {
   newEvent: "newEvent",
+  create: "create",
   back: "back",
   cancel: "cancel",
   save: "save",
   delete: "delete",
+  edit: "edit",
+  today: "today",
+  upcoming: "upcoming",
+  all: "all",
 };
 
 export const dateMask = /^\d{2}\.\d{2}\.\d{4}$/;
