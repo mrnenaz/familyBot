@@ -1,5 +1,4 @@
 import { Telegraf, Scenes, session } from "telegraf";
-// import schedule from "node-schedule";
 import { COMMAND_NAMES, COMMANDS } from "./constants";
 import { upcomingEvent } from "./commands";
 import {
@@ -12,7 +11,6 @@ import {
 import { testScene } from "./scenes/testScene/testScene";
 import { nowEvent, welcomeEvent } from "./commands/commands";
 import { welcomeEventScene } from "./scenes/welcomeEvent";
-// import { findCurrentEvents } from "./db/controllers/Events";
 
 export const setupBot = async () => {
   const bot = new Telegraf(process.env.GribFamilyButlerBot);
@@ -51,24 +49,6 @@ export const setupBot = async () => {
       return upcomingEvent(ctx);
     }
   });
-
-  /**
-   *
-   */
-  // const channel = process.env.CHAT_ID;
-  // // const date = new Date(2025, 0, 10, 8, 51, 0);
-  // const job = schedule.scheduleJob("21 13 * * *", async () => {
-  // const job = schedule.scheduleJob({ hour: "01", minute: "19" }, async () => {
-  //   const result = await findCurrentEvents();
-  //   console.log("result", result);
-  //   if (result.length === 0) {
-  //     bot.telegram.sendMessage(channel, "Событий нет", { parse_mode: "HTML" });
-  //   }
-  // });
-  // console.log("job", job);
-  /**
-   *
-   */
 
   return bot;
 };
