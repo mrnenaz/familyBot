@@ -2,24 +2,32 @@ import dotenv from "dotenv";
 import { connectDB } from "./db";
 import { setupBot } from "./bot";
 import { scheduleJob } from "node-schedule";
-import { findCurrentEvents } from "./db/controllers/Events";
+import { findCurrentEvents, findUpcomingEvents } from "./db/controllers/Events";
 import { getDateDDMMYYYY } from "./utils";
 
-const EVERY_DAY_EVENT_TIME = "0 10 * * *";
+const EVERY_DAY_EVENT_TIME = "0 9 * * *";
 
 async function sendSheduleMessage(bot: any) {
-  const result = await findCurrentEvents();
-  if (result.length === 0) {
-    bot.telegram.sendMessage(process.env.CHAT_ID, "На сегодня событий нет");
+  const todayResult = await findCurrentEvents();
+  const upComResult = await findUpcomingEvents();
+  let str: string = "";
+  if (todayResult.length === 0) {
+    str = `<b>На сегодня событий нет</b>\n`;
   } else {
-    let str = `<b>События на сегодня <i>${getDateDDMMYYYY(result[0].date)}</i>:</b>`;
-    result.forEach((item: any) => {
+    str = `<b>События на сегодня <i>${getDateDDMMYYYY(todayResult[0].date)}</i>:</b>`;
+    todayResult.forEach((item: any) => {
       str += `\n${item.name}`;
     });
-    await bot.telegram.sendMessage(process.env.CHAT_ID, str, {
-      parse_mode: "HTML",
+  }
+  if (upComResult.length !== 0) {
+    str += `\n<b>Ближайшие события:</b>`;
+    upComResult.forEach((item: any) => {
+      str += `\n${item.name} - ${getDateDDMMYYYY(item.date)}`;
     });
   }
+  await bot.telegram.sendMessage(process.env.CHAT_ID, str, {
+    parse_mode: "HTML",
+  });
 }
 
 (async () => {

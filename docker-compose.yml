@@ -16,7 +16,9 @@ services:
     container_name: node-app_fam
     ports:
       - 3001:3001
-
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     depends_on:
       - mongo
     environment:
