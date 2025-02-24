@@ -21,7 +21,8 @@
     "random": "^5.1.1",
     "telegraf": "4.16.3",
     "telegraf-session-mongoose": "^2.0.6",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

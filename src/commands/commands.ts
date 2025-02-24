@@ -10,7 +10,7 @@ export const upcomingEvent = (ctx: any) => {
 };
 
 export const testCommand = (ctx: any) => {
-  return ctx.scene.enter(SCENE_NAMES.TEST);
+  return ctx.scene.enter(SCENE_NAMES.CREATE);
 };
 
 export const nowEvent = (ctx: any) => {
@@ -31,4 +31,8 @@ export const deleteEvent = (ctx: any) => {
 
 export const welcomeEvent = (ctx: any) => {
   return ctx.scene.enter(SCENE_NAMES.WELCOME);
+};
+
+export const identificationEvent = (ctx: any) => {
+  return ctx.scene.enter(SCENE_NAMES.IDENTIFICATION);
 };

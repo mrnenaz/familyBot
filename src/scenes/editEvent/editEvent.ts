@@ -3,7 +3,7 @@ import {
   getAllEvents,
   updateEvent,
 } from "../../db/controllers/Events";
-import { BTN_TEXTS, EVENT_NAMES, SCENE_NAMES } from "../../constants";
+import { BTN_ACTION_CAPTIONS, EVENT_NAMES, SCENE_NAMES } from "../../constants";
 import { Markup, Scenes } from "telegraf";
 import { getDateDDMMYYYY } from "../../utils";
 import { stepOne, stepThree, stepTwo } from "./steps";
@@ -31,7 +31,12 @@ editEventScene.enter(async (ctx: any) => {
     parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [
-        [Markup.button.callback(BTN_TEXTS.cancel, EVENT_NAMES.cancel)],
+        [
+          Markup.button.callback(
+            BTN_ACTION_CAPTIONS.cancel,
+            EVENT_NAMES.cancel
+          ),
+        ],
       ],
     },
   });
@@ -49,7 +54,8 @@ editEventScene.action(EVENT_NAMES.save, async (ctx: any) => {
 });
 
 editEventScene.action(EVENT_NAMES.cancel, async (ctx: any) => {
-  return ctx.scene.leave();
+  ctx.deleteMessage(ctx.update.callback_query.message.message_id);
+  ctx.scene.enter(SCENE_NAMES.WELCOME);
 });
 
 editEventScene.leave((ctx: any) => {

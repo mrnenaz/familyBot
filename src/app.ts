@@ -4,30 +4,36 @@ import { setupBot } from "./bot";
 import { scheduleJob } from "node-schedule";
 import { findCurrentEvents, findUpcomingEvents } from "./db/controllers/Events";
 import { getDateDDMMYYYY } from "./utils";
+import { logger } from "./utils/logger";
 
 const EVERY_DAY_EVENT_TIME = "0 9 * * *";
 
 async function sendSheduleMessage(bot: any) {
-  const todayResult = await findCurrentEvents();
-  const upComResult = await findUpcomingEvents();
-  let str: string = "";
-  if (todayResult.length === 0) {
-    str = `<b>На сегодня событий нет</b>\n`;
-  } else {
-    str = `<b>События на сегодня <i>${getDateDDMMYYYY(todayResult[0].date)}</i>:</b>`;
-    todayResult.forEach((item: any) => {
-      str += `\n${item.name}`;
+  try {
+    const todayResult = await findCurrentEvents();
+    const upComResult = await findUpcomingEvents();
+    let str: string = "";
+    if (todayResult.length === 0) {
+      str = `<b>На сегодня событий нет</b>\n`;
+    } else {
+      str = `<b>События на сегодня <i>${getDateDDMMYYYY(todayResult[0].date)}</i>:</b>`;
+      todayResult.forEach((item: any) => {
+        str += `\n${item.name}`;
+      });
+    }
+    if (upComResult.length !== 0) {
+      str += `\n<b>Ближайшие события:</b>`;
+      upComResult.forEach((item: any) => {
+        str += `\n${item.name} - ${getDateDDMMYYYY(item.date)}`;
+      });
+    }
+    await bot.telegram.sendMessage(process.env.CHAT_ID, str, {
+      parse_mode: "HTML",
     });
+    logger.info("Scheduled message sent successfully");
+  } catch (error) {
+    logger.error("Error sending scheduled message:", error);
   }
-  if (upComResult.length !== 0) {
-    str += `\n<b>Ближайшие события:</b>`;
-    upComResult.forEach((item: any) => {
-      str += `\n${item.name} - ${getDateDDMMYYYY(item.date)}`;
-    });
-  }
-  await bot.telegram.sendMessage(process.env.CHAT_ID, str, {
-    parse_mode: "HTML",
-  });
 }
 
 (async () => {
@@ -39,18 +45,18 @@ async function sendSheduleMessage(bot: any) {
       try {
         sendSheduleMessage(bot);
       } catch (error) {
-        console.log("Ошибка запуска: ", error);
+        logger.error("Schedule job error:", error);
       }
     });
     bot.launch();
-    console.log("</ Бот успешно запущен >");
+    logger.info("Bot successfully started");
     process.on("SIGINT", () => {
       job.cancel();
       bot.stop();
-      console.log("Бот остановлен");
+      logger.info("Bot stopped");
       process.exit(0);
     });
   } catch (error) {
-    console.log("Ошибка запуска: ", error);
+    logger.error("Startup error:", error);
   }
 })();
