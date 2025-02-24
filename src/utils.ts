@@ -16,3 +16,11 @@ export const isPrivate = async (ctx: any) => {
   const chatType = await getChatType(ctx);
   return chatType === GROUP_TYPES.PRIVATE;
 };
+
+export const hasUserInPrivilegedList = (ctx: any) => {
+  const id = String(ctx.update.message.from.id);
+  const users: string[] = process.env.PRIVILEGED_USERS?.split(",");
+  return users.includes(id);
+};
+
+export const personalIdToArray = (personalId: string) => personalId.split(",");

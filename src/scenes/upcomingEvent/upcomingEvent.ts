@@ -2,20 +2,27 @@ import { Scenes } from "telegraf";
 import { SCENE_NAMES } from "../../constants";
 import { findUpcomingEvents } from "../../db/controllers/Events";
 import { getDateDDMMYYYY } from "../../utils";
+import { findPersonalUpcomingEvents } from "../../db/controllers/EventsPersonal";
 
 export const getUpcomingEvent = new Scenes.BaseScene(
   SCENE_NAMES.UPCOMING_EVENT
 );
 
 getUpcomingEvent.enter(async (ctx: any) => {
-  const result = await findUpcomingEvents();
+  const { isPersonal, userInfo } = ctx.session.params;
+  const result = isPersonal
+    ? await findPersonalUpcomingEvents(userInfo.id)
+    : await findUpcomingEvents();
   if (result.length === 0) {
-    ctx.sendMessage("Событий нет", { parse_mode: "HTML" });
+    const emptyTest = isPersonal
+      ? "ПЕРСОНАЛЬНЫЕ события не найдены"
+      : "События не найдены";
+    ctx.sendMessage(emptyTest, { parse_mode: "HTML" });
     return getUpcomingEvent.leave(ctx);
   }
-  let str = `<b>Ближайшие события:</b>`;
+  let str = `<u>Ближайшие события:</u>`;
   result.forEach((item: any) => {
-    str += `\n${item.name} - ${getDateDDMMYYYY(item.date)}`;
+    str += `\n${getDateDDMMYYYY(item.date)} - <i>${item.name}</i>`;
   });
   await ctx.sendMessage(str, { parse_mode: "HTML" });
   return getUpcomingEvent.leave(ctx);

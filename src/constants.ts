@@ -43,21 +43,33 @@ export const COMMANDS = [
 export const SCENE_NAMES = {
   NEW_EVENT: "new_event",
   UPCOMING_EVENT: "upcoming_event",
-  TEST: "test",
+  CREATE: "create",
   TODAY: "today",
   ALL: "all",
   EDIT: "edit",
   DELETE: "delete",
   WELCOME: "welcome",
+  IDENTIFICATION: "identification",
 };
 
-export const BTN_TEXTS = {
-  no: "Нет",
-  yes: "Да",
-  back: "Назад",
-  cancel: "Отменить",
-  save: "Сохранить",
-};
+export enum BTN_ACTION_CAPTIONS {
+  no = "Нет",
+  yes = "Да",
+  back = "Назад",
+  cancel = "Отменить",
+  save = "Сохранить",
+}
+
+export enum INLINE_KEYBOARD_TEXTS {
+  TODAY = "Сегодня",
+  UPCOMING = "Ближайшие",
+  ALL = "Все",
+  CREATE = "Создать",
+  EDIT = "Редактировать",
+  DELETE = "Удалить",
+  PERSONAL = "Персональное",
+  GENERAL = "Общее",
+}
 
 export const EVENT_NAMES = {
   newEvent: "newEvent",
@@ -70,6 +82,8 @@ export const EVENT_NAMES = {
   today: "today",
   upcoming: "upcoming",
   all: "all",
+  welcome: "welcome",
+  welcomePersonal: "welcomePersonal",
 };
 
 export const dateMask = /^\d{2}\.\d{2}\.\d{4}$/;

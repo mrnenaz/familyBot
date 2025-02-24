@@ -25,6 +25,8 @@ services:
       - MONGO_URL=mongodb://mongo:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2
     networks:
       - mynetwork2
+    volumes:
+      - ./logs:/app/logs
 
 networks:
   mynetwork2:

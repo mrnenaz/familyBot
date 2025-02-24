@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+// import { testAdd, testFind } from "./controllers/Users";
 
 export const connectDB = async () => {
   try {
@@ -7,6 +8,8 @@ export const connectDB = async () => {
       dbName: "familyBot",
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+    // await testAdd();
+    // await testFind();
   } catch (error) {
     console.log(error);
   }

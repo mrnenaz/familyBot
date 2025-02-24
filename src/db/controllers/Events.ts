@@ -1,7 +1,7 @@
-// import moment from "moment-timezone";
+import { personalIdToArray } from "../../utils";
 import { TGFamilyEvents } from "../models";
 import { Events } from "../models/types";
-// import { format, zonedTimeToUtc } from "date-fns";
+import { TGFamilyUsers } from "../models/Users";
 
 export const insertNewEvent = async (data: Events) => {
   try {
@@ -23,10 +23,14 @@ export const insertNewEvent = async (data: Events) => {
 };
 
 export const findCurrentEvents = async () => {
+  const users = await TGFamilyUsers.find({
+    uuid: { $in: personalIdToArray(process.env.PRIVILEGED_USERS) },
+  }).exec();
+
   const dateOld = new Date();
   dateOld.setHours(dateOld.getHours() + 3);
-  console.log("dateOld", dateOld);
   return await TGFamilyEvents.find({
+    id: { $nin: users.map((user) => user._id) },
     $expr: {
       $and: [
         { $eq: [{ $month: "$date" }, { $month: dateOld }] },
@@ -40,8 +44,12 @@ export const findCurrentEvents = async () => {
 
 // ближайшие события (все даты по дд и мм, которые больше текущих)
 export const findUpcomingEvents = async () => {
+  const users = await TGFamilyUsers.find({
+    uuid: { $in: personalIdToArray(process.env.PRIVILEGED_USERS) },
+  }).exec();
   const date = new Date();
   const resultsArray = await TGFamilyEvents.find({
+    id: { $nin: users.map((user) => user._id) },
     $expr: {
       $cond: [
         { $ne: [{ $month: "$date" }, { $month: new Date(date) }] },
@@ -84,7 +92,13 @@ export const findUpcomingEvents = async () => {
 };
 
 export const getAllEvents = async () => {
-  const resultsArray = await TGFamilyEvents.find();
+  const users = await TGFamilyUsers.find({
+    uuid: { $in: personalIdToArray(process.env.PRIVILEGED_USERS) },
+  }).exec();
+
+  const resultsArray = await TGFamilyEvents.find({
+    id: { $nin: users.map((user) => user._id) },
+  }).exec();
   return resultsArray.sort((a, b) => {
     if (a.date.getMonth() < b.date.getMonth()) return -1;
     if (a.date.getMonth() > b.date.getMonth()) return 1;

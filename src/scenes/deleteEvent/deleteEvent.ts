@@ -1,8 +1,9 @@
 import { Markup, Scenes } from "telegraf";
-import { BTN_TEXTS, EVENT_NAMES, SCENE_NAMES } from "../../constants";
+import { BTN_ACTION_CAPTIONS, EVENT_NAMES, SCENE_NAMES } from "../../constants";
 import { stepOne } from "./steps";
 import { deleteEvent, getAllEvents } from "../../db/controllers/Events";
 import { getDateDDMMYYYY } from "../../utils";
+import { getAllPersonalEvents } from "../../db/controllers/EventsPersonal";
 
 export const deleteEventScene = new Scenes.WizardScene(
   SCENE_NAMES.DELETE,
@@ -12,20 +13,30 @@ export const deleteEventScene = new Scenes.WizardScene(
 deleteEventScene.enter(async (ctx: any) => {
   console.log("deleteEventScene");
   ctx.scene.state.event = {};
-  const result = await getAllEvents();
+  const { isPersonal, userInfo } = ctx.session.params;
+  const result = isPersonal
+    ? await getAllPersonalEvents(userInfo.id)
+    : await getAllEvents();
   if (result.length === 0) {
     ctx.sendMessage("События не найдены", { parse_mode: "HTML" });
     return deleteEventScene.leave(ctx);
   }
-  let str = `<b>Выберите событие из списка и отправьте его название в ответном сообщении</b>`;
+  let str = isPersonal
+    ? `<u>Выберите <b>ПЕРСОНАЛЬНОЕ</b> событие из списка и отправьте его название в ответном сообщении</u>`
+    : `<u><b>Выберите событие из списка и отправьте его название в ответном сообщении</b></u>`;
   result.forEach((item: any) => {
-    str += `\n${item.name} - ${getDateDDMMYYYY(item.date)}`;
+    str += `\n${getDateDDMMYYYY(item.date)} - <i>${item.name}</i>`;
   });
   await ctx.sendMessage(str, {
     parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [
-        [Markup.button.callback(BTN_TEXTS.cancel, EVENT_NAMES.cancel)],
+        [
+          Markup.button.callback(
+            BTN_ACTION_CAPTIONS.cancel,
+            EVENT_NAMES.cancel
+          ),
+        ],
       ],
     },
   });
@@ -42,7 +53,8 @@ deleteEventScene.action(EVENT_NAMES.delete, async (ctx: any) => {
 });
 
 deleteEventScene.action(EVENT_NAMES.cancel, async (ctx: any) => {
-  return ctx.scene.leave();
+  ctx.deleteMessage(ctx.update.callback_query.message.message_id);
+  ctx.scene.enter(SCENE_NAMES.WELCOME);
 });
 
 deleteEventScene.leave((ctx) => {
